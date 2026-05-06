@@ -34,7 +34,7 @@ export default function Login() {
           <img 
             src="/band-photo.jpg" 
             alt="Casiopony" 
-            className="w-40 h-40 rounded-lg object-cover mx-auto mb-6 border-2 border-dark-700 shadow-lg"
+            className="w-40 h-40 rounded-lg object-contain mx-auto mb-6 border-2 border-dark-700 shadow-lg"
           />
           <h2 className="text-4xl font-bold text-white mb-1">Casiopony</h2>
           <p className="text-gray-400 mt-2">Your band's creative space</p>
