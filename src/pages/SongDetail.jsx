@@ -7,7 +7,7 @@ export default function SongDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { currentSong, setCurrentSong } = useStore();
-  const [loading, setLoading] = useState(!id);
+  const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(!id);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
