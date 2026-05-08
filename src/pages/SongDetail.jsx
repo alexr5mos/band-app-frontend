@@ -41,7 +41,7 @@ export default function SongDetail() {
     }
   };
 
-  cconst handleSave = async () => {
+  const handleSave = async () => {
   setSaving(true);
   try {
     if (!id) {
