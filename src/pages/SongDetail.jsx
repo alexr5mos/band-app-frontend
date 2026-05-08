@@ -41,28 +41,42 @@ export default function SongDetail() {
     }
   };
 
-  const handleSave = async () => {
-    setSaving(true);
-    try {
+  cconst handleSave = async () => {
+  setSaving(true);
+  try {
+    if (!id) {
+      // Creating new song
+      const { data } = await songsAPI.create({
+        title: song.title,
+        genre: song.genre,
+        bpm: song.bpm,
+        key: song.key
+      });
+      // Save details
+      if (song.details) {
+        await songsAPI.updateDetails(data.id, song.details);
+      }
+      navigate(`/songs/${data.id}`);
+    } else {
+      // Updating existing song
       await songsAPI.update(song.id, {
         title: song.title,
         genre: song.genre,
         bpm: song.bpm,
         key: song.key
       });
-
       if (song.details) {
         await songsAPI.updateDetails(song.id, song.details);
       }
-
       setEditing(false);
       loadSong();
-    } catch (err) {
-      console.error('Failed to save:', err);
-    } finally {
-      setSaving(false);
     }
-  };
+  } catch (err) {
+    console.error('Failed to save:', err);
+  } finally {
+    setSaving(false);
+  }
+};
 
   const handleAudioUpload = async (e) => {
     const file = e.target.files?.[0];
