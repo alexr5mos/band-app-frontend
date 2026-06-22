@@ -36,7 +36,7 @@ export default function SongsList() {
             <img
               src="/casiopony-logo.png"
               alt="Casiopony"
-              className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded object-contain"
+              className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded object-contain"
             />
             <p className="text-gray-400 text-xs mt-1">{filtered.length} songs</p>
           </div>
