@@ -1,36 +1,17 @@
 import { create } from 'zustand';
+import { supabase } from './lib/supabase';
 
 export const useStore = create((set) => ({
-  user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
-  token: localStorage.getItem('token') || null,
+  session: null,
   songs: [],
   currentSong: null,
 
-  setUser: (user) => {
-    localStorage.setItem('user', JSON.stringify(user));
-    set({ user });
-  },
-
-  setToken: (token) => {
-    localStorage.setItem('token', token);
-    set({ token });
-  },
-
-  logout: () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    set({ user: null, token: null, songs: [] });
-  },
-
+  setSession: (session) => set({ session }),
   setSongs: (songs) => set({ songs }),
-  
   setCurrentSong: (song) => set({ currentSong: song }),
 
-  addSong: (song) => set((state) => ({
-    songs: [song, ...state.songs]
-  })),
-
-  updateSong: (id, updates) => set((state) => ({
-    songs: state.songs.map(s => s.id === id ? { ...s, ...updates } : s)
-  }))
+  logout: async () => {
+    await supabase.auth.signOut();
+    set({ session: null, songs: [], currentSong: null });
+  },
 }));

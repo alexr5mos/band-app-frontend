@@ -1,45 +1,105 @@
-import axios from 'axios';
-import { useStore } from './store';
+import { supabase } from './lib/supabase';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL + '/api' || 'http://localhost:3000/api';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-});
-
-api.interceptors.request.use((config) => {
-  const token = useStore.getState().token;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-export const authAPI = {
-  signup: (email, password, username, instrument) =>
-    api.post('/auth/signup', { email, password, username, instrument }),
-  login: (email, password) =>
-    api.post('/auth/login', { email, password }),
-};
+function toIntOrNull(v) {
+  if (v === '' || v === null || v === undefined) return null;
+  const n = Number(v);
+  return Number.isNaN(n) ? null : n;
+}
 
 export const songsAPI = {
-  getAll: () => api.get('/songs'),
-  getOne: (id) => api.get(`/songs/${id}`),
-  create: (data) => api.post('/songs', data),
-  update: (id, data) => api.put(`/songs/${id}`, data),
-  updateDetails: (id, data) => api.put(`/songs/${id}/details`, data),
-  delete: (id) => api.delete(`/songs/${id}`),
-};
-
-export const uploadAPI = {
-  audio: (songId, file) => {
-    const formData = new FormData();
-    formData.append('audio', file);
-    return api.post(`/upload/audio/${songId}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+  getAll: async () => {
+    const { data, error } = await supabase
+      .from('songs')
+      .select('*')
+      .order('updated_at', { ascending: false });
+    if (error) throw error;
+    return data;
   },
-  getAudio: (songId) => api.get(`/upload/song/${songId}`),
-};
 
-export default api;
+  getOne: async (id) => {
+    const { data: song, error: e1 } = await supabase
+      .from('songs')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (e1) throw e1;
+
+    const { data: details, error: e2 } = await supabase
+      .from('song_details')
+      .select('*')
+      .eq('song_id', id)
+      .maybeSingle();
+    if (e2) throw e2;
+
+    return {
+      ...song,
+      details: details || { lyrics: '', chords: '', structure: '', notes: '' },
+      audioFiles: [],
+    };
+  },
+
+  create: async (data) => {
+    const { data: song, error } = await supabase
+      .from('songs')
+      .insert({
+        title: data.title,
+        genre: data.genre || null,
+        bpm: toIntOrNull(data.bpm),
+        key: data.key || null,
+      })
+      .select()
+      .single();
+    if (error) throw error;
+    return song;
+  },
+
+  update: async (id, data) => {
+    const { error } = await supabase
+      .from('songs')
+      .update({
+        title: data.title,
+        genre: data.genre || null,
+        bpm: toIntOrNull(data.bpm),
+        key: data.key || null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id);
+    if (error) throw error;
+  },
+
+  updateDetails: async (songId, details) => {
+    const payload = {
+      lyrics: details.lyrics || '',
+      chords: details.chords || '',
+      structure: details.structure || '',
+      notes: details.notes || '',
+      updated_at: new Date().toISOString(),
+    };
+
+    const { data: existing, error: e0 } = await supabase
+      .from('song_details')
+      .select('id')
+      .eq('song_id', songId)
+      .maybeSingle();
+    if (e0) throw e0;
+
+    if (existing) {
+      const { error } = await supabase
+        .from('song_details')
+        .update(payload)
+        .eq('song_id', songId);
+      if (error) throw error;
+    } else {
+      const { error } = await supabase
+        .from('song_details')
+        .insert({ song_id: songId, ...payload });
+      if (error) throw error;
+    }
+  },
+
+  delete: async (id) => {
+    await supabase.from('song_details').delete().eq('song_id', id);
+    const { error } = await supabase.from('songs').delete().eq('id', id);
+    if (error) throw error;
+  },
+};

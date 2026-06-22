@@ -1,25 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { songsAPI } from '../api';
 import { useStore } from '../store';
 
 export default function SongsList() {
-  const navigate = useNavigate();
-  const { user, token, songs, setSongs } = useStore();
+  const { songs, setSongs } = useStore();
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    if (!token) {
-      navigate('/login');
-      return;
-    }
     loadSongs();
-  }, [token, navigate]);
+  }, []);
 
   const loadSongs = async () => {
     try {
-      const { data } = await songsAPI.getAll();
+      const data = await songsAPI.getAll();
       setSongs(data);
     } catch (err) {
       console.error('Failed to load songs:', err);
@@ -28,7 +23,7 @@ export default function SongsList() {
     }
   };
 
-  const filtered = songs.filter(s =>
+  const filtered = songs.filter((s) =>
     s.title.toLowerCase().includes(search.toLowerCase()) ||
     (s.genre || '').toLowerCase().includes(search.toLowerCase())
   );
@@ -39,7 +34,7 @@ export default function SongsList() {
       <div className="bg-dark-800 border-b border-dark-700 p-4 sticky top-0 z-10">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold">🎸 {user?.username}'s Band</h1>
+            <h1 className="text-2xl font-bold">🎸 Casiopony</h1>
             <p className="text-gray-400 text-sm">{filtered.length} songs</p>
           </div>
           <button
@@ -79,7 +74,7 @@ export default function SongsList() {
           </div>
         ) : (
           <div className="space-y-2">
-            {filtered.map(song => (
+            {filtered.map((song) => (
               <Link
                 key={song.id}
                 to={`/songs/${song.id}`}
@@ -90,11 +85,12 @@ export default function SongsList() {
                   {song.bpm && <span>🎵 {song.bpm} BPM</span>}
                   {song.key && <span>🎼 {song.key}</span>}
                   {song.genre && <span>📻 {song.genre}</span>}
-                  {song.audio_count > 0 && <span>🔊 {song.audio_count} audio</span>}
                 </div>
-                <div className="text-xs text-gray-500 mt-2">
-                  By {song.created_by} • {new Date(song.updated_at).toLocaleDateString()}
-                </div>
+                {song.updated_at && (
+                  <div className="text-xs text-gray-500 mt-2">
+                    {new Date(song.updated_at).toLocaleDateString()}
+                  </div>
+                )}
               </Link>
             ))}
           </div>

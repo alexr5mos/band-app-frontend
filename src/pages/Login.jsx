@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { authAPI } from '../api';
-import { useStore } from '../store';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { setUser, setToken } = useStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({ email: '', password: '' });
@@ -15,15 +13,16 @@ export default function Login() {
     setError('');
     setLoading(true);
 
-    try {
-      const { data } = await authAPI.login(form.email, form.password);
-      setUser(data.user);
-      setToken(data.token);
-      navigate('/songs');
-    } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
-    } finally {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: form.email.trim(),
+      password: form.password,
+    });
+
+    if (error) {
+      setError('Wrong email or password');
       setLoading(false);
+    } else {
+      navigate('/songs');
     }
   };
 
@@ -31,9 +30,9 @@ export default function Login() {
     <div className="min-h-screen bg-dark-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <img 
-            src="/band-photo.jpg" 
-            alt="Casiopony" 
+          <img
+            src="/band-photo.jpg"
+            alt="Casiopony"
             className="w-40 h-40 rounded-lg object-contain mx-auto mb-6 border-2 border-dark-700 shadow-lg"
           />
           <h2 className="text-4xl font-bold text-white mb-1">Casiopony</h2>
@@ -49,7 +48,7 @@ export default function Login() {
 
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Band email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
@@ -58,7 +57,7 @@ export default function Login() {
 
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Band password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
@@ -73,13 +72,6 @@ export default function Login() {
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
-
-        <p className="text-center text-gray-400 mt-6">
-          New?{' '}
-          <Link to="/signup" className="text-red-500 hover:text-red-400 font-semibold">
-            Create account
-          </Link>
-        </p>
       </div>
     </div>
   );
