@@ -24,8 +24,7 @@ export default function SongsList() {
   };
 
   const filtered = songs.filter((s) =>
-    s.title.toLowerCase().includes(search.toLowerCase()) ||
-    (s.genre || '').toLowerCase().includes(search.toLowerCase())
+    s.title.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -82,9 +81,9 @@ export default function SongsList() {
               >
                 <h3 className="font-semibold text-lg mb-1">{song.title}</h3>
                 <div className="flex gap-3 text-sm text-gray-400">
+                  {song.capo !== null && song.capo !== undefined && <span>🪜 Capo {song.capo}</span>}
                   {song.bpm && <span>🎵 {song.bpm} BPM</span>}
                   {song.key && <span>🎼 {song.key}</span>}
-                  {song.genre && <span>📻 {song.genre}</span>}
                 </div>
                 {song.updated_at && (
                   <div className="text-xs text-gray-500 mt-2">

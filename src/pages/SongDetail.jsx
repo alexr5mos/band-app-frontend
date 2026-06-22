@@ -14,7 +14,7 @@ export default function SongDetail() {
   const [song, setSong] = useState(
     currentSong || {
       title: '',
-      genre: '',
+      capo: null,
       bpm: '',
       key: '',
       details: { lyrics: '', chords: '', structure: '', notes: '' },
@@ -46,7 +46,7 @@ export default function SongDetail() {
         // Creating new song
         const data = await songsAPI.create({
           title: song.title,
-          genre: song.genre,
+          capo: song.capo,
           bpm: song.bpm,
           key: song.key,
         });
@@ -59,7 +59,7 @@ export default function SongDetail() {
         // Updating existing song
         await songsAPI.update(song.id, {
           title: song.title,
-          genre: song.genre,
+          capo: song.capo,
           bpm: song.bpm,
           key: song.key,
         });
@@ -160,7 +160,7 @@ export default function SongDetail() {
             <>
               <select
                 value={song.capo || ''}
-                onChange={(e) => setSong({ ...song, capo: e.target.value })}
+                onChange={(e) => setSong({ ...song, capo: e.target.value ? parseInt(e.target.value, 10) : null })}
                 className="bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
               >
                 <option value="">No capo</option>
@@ -187,11 +187,7 @@ export default function SongDetail() {
             </>
           ) : (
             <>
-              {song.capo !== null && (
-                <div>
-                  🪜 <strong>Capo:</strong> {song.capo === 0 ? 'None' : `Fret ${song.capo}`}
-                </div>
-              )}
+              {song.capo !== null && song.capo !== undefined && <div>🪜 <strong>Capo:</strong> Fret {song.capo}</div>}
               {song.bpm && <div>🎵 <strong>BPM:</strong> {song.bpm}</div>}
               {song.key && <div>🎼 <strong>Key:</strong> {song.key}</div>}
             </>
@@ -277,7 +273,6 @@ export default function SongDetail() {
             </div>
           )}
         </div>
-
       </div>
     </div>
   );
