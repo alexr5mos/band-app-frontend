@@ -33,8 +33,12 @@ export default function SongsList() {
       <div className="bg-dark-800 border-b border-dark-700 p-4 sticky top-0 z-10">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold">🎸 Casiopony</h1>
-            <p className="text-gray-400 text-sm">{filtered.length} songs</p>
+            <img
+              src="/casiopony-logo.png"
+              alt="Casiopony"
+              className="w-9 h-9 rounded object-contain"
+            />
+            <p className="text-gray-400 text-xs mt-1">{filtered.length} songs</p>
           </div>
           <button
             onClick={() => useStore.getState().logout()}
