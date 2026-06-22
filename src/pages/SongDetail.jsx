@@ -106,10 +106,34 @@ export default function SongDetail() {
         >
           ← Songs
         </button>
-        {!editing && (
+        {editing ? (
+          <div className="flex gap-2">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-sm font-semibold disabled:opacity-50"
+            >
+              {saving ? 'Saving...' : '✓ Save'}
+            </button>
+            <button
+              onClick={() => navigate('/songs')}
+              className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm font-semibold"
+            >
+              Cancel
+            </button>
+            {id && (
+              <button
+                onClick={handleDelete}
+                className="px-3 py-2 bg-red-900 hover:bg-red-800 rounded text-sm font-semibold"
+              >
+                🗑️
+              </button>
+            )}
+          </div>
+        ) : (
           <button
             onClick={() => setEditing(true)}
-            className="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm font-semibold"
           >
             Edit
           </button>
@@ -245,32 +269,6 @@ export default function SongDetail() {
           )}
         </div>
 
-        {/* Save / Cancel / Delete */}
-        {editing && (
-          <div className="flex gap-3">
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 rounded font-semibold disabled:opacity-50"
-            >
-              {saving ? 'Saving...' : '✓ Save'}
-            </button>
-            <button
-              onClick={() => navigate('/songs')}
-              className="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded font-semibold"
-            >
-              Cancel
-            </button>
-            {id && (
-              <button
-                onClick={handleDelete}
-                className="px-4 py-3 bg-red-900 hover:bg-red-800 rounded font-semibold"
-              >
-                🗑️
-              </button>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
