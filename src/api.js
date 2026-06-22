@@ -43,7 +43,7 @@ export const songsAPI = {
       .from('songs')
       .insert({
         title: data.title,
-        genre: data.genre || null,
+        capo: toIntOrNull(data.capo),
         bpm: toIntOrNull(data.bpm),
         key: data.key || null,
       })
@@ -58,7 +58,7 @@ export const songsAPI = {
       .from('songs')
       .update({
         title: data.title,
-        genre: data.genre || null,
+        capo: toIntOrNull(data.capo),
         bpm: toIntOrNull(data.bpm),
         key: data.key || null,
         updated_at: new Date().toISOString(),

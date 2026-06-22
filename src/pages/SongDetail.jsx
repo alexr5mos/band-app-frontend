@@ -158,13 +158,18 @@ export default function SongDetail() {
         <div className="grid grid-cols-2 gap-4">
           {editing ? (
             <>
-              <input
-                type="text"
-                placeholder="Genre"
-                value={song.genre || ''}
-                onChange={(e) => setSong({ ...song, genre: e.target.value })}
-                className="bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-              />
+              <select
+                value={song.capo || ''}
+                onChange={(e) => setSong({ ...song, capo: e.target.value })}
+                className="bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+              >
+                <option value="">No capo</option>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((fret) => (
+                  <option key={fret} value={fret}>
+                    Capo {fret}
+                  </option>
+                ))}
+              </select>
               <input
                 type="number"
                 placeholder="BPM"
@@ -182,7 +187,11 @@ export default function SongDetail() {
             </>
           ) : (
             <>
-              {song.genre && <div>📻 <strong>Genre:</strong> {song.genre}</div>}
+              {song.capo !== null && (
+                <div>
+                  🪜 <strong>Capo:</strong> {song.capo === 0 ? 'None' : `Fret ${song.capo}`}
+                </div>
+              )}
               {song.bpm && <div>🎵 <strong>BPM:</strong> {song.bpm}</div>}
               {song.key && <div>🎼 <strong>Key:</strong> {song.key}</div>}
             </>
