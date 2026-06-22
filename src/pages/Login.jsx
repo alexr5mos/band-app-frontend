@@ -31,11 +31,10 @@ export default function Login() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <img
-            src="/band-photo.jpg"
+            src="/casiopony-logo.png"
             alt="Casiopony"
-            className="w-40 h-40 rounded-lg object-contain mx-auto mb-6 border-2 border-dark-700 shadow-lg"
+            className="w-48 h-48 rounded-lg object-contain mx-auto mb-6 border-2 border-dark-700 shadow-lg"
           />
-          <h2 className="text-4xl font-bold text-white mb-1">Casiopony</h2>
           <p className="text-gray-400 mt-2">Your band's creative space</p>
         </div>
 
@@ -51,7 +50,7 @@ export default function Login() {
             placeholder="Band email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
+            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
             required
           />
 
@@ -60,7 +59,7 @@ export default function Login() {
             placeholder="Band password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
-            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
+            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
             required
           />
 
