@@ -44,7 +44,6 @@ export default function SongDetail() {
     setSaving(true);
     try {
       if (!id) {
-        // Creating new song
         const data = await songsAPI.create({
           title: song.title,
           capo: song.capo,
@@ -57,7 +56,6 @@ export default function SongDetail() {
         setCurrentSong(null);
         navigate(`/songs/${data.id}`);
       } else {
-        // Updating existing song
         await songsAPI.update(song.id, {
           title: song.title,
           capo: song.capo,
@@ -274,6 +272,9 @@ export default function SongDetail() {
             </div>
           )}
         </div>
+
+        {/* Recordings — only shown when viewing, not editing */}
+        {id && !editing && <RecordingsPanel songId={id} />}
       </div>
     </div>
   );
