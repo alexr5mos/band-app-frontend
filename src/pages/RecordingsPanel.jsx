@@ -78,22 +78,20 @@ function RecordingRow({ recording, onDeleted }) {
   }
 
   return (
-    <div className="py-3 border-b border-gray-100 last:border-0">
+    <div className="py-3 border-b border-gray-700 last:border-0">
       <div className="flex items-start justify-between gap-2 mb-1">
         <div className="min-w-0">
-          <span className="font-medium text-sm text-gray-900 block truncate">
-            {recording.label || recording.filename}
-          </span>
           {recording.label && (
-            <span className="text-xs text-gray-400 block truncate">{recording.filename}</span>
+            <span className="font-semibold text-sm text-white block truncate">{recording.label}</span>
           )}
+          <span className="text-xs text-gray-400 block truncate">{recording.filename}</span>
         </div>
         <div className="flex items-center gap-3 text-xs text-gray-400 shrink-0 mt-0.5">
           {recording.duration_seconds && <span>{formatDuration(recording.duration_seconds)}</span>}
           {recording.file_size_bytes && <span>{formatBytes(recording.file_size_bytes)}</span>}
           <span>{new Date(recording.created_at).toLocaleDateString()}</span>
           {!confirmDelete ? (
-            <button onClick={() => setConfirmDelete(true)} className="text-gray-300 hover:text-red-400 transition-colors" title="Delete">✕</button>
+            <button onClick={() => setConfirmDelete(true)} className="text-gray-500 hover:text-red-400 transition-colors" title="Delete">✕</button>
           ) : (
             <span className="flex items-center gap-1">
               <button onClick={handleDelete} disabled={deleting} className="text-red-500 font-medium hover:underline disabled:opacity-50">
@@ -174,8 +172,8 @@ function UploadForm({ songId, onUploaded }) {
   const isUploading = status === 'uploading';
 
   return (
-    <div className="mt-4 p-4 rounded-xl bg-gray-50 border border-gray-200">
-      <p className="text-sm font-medium text-gray-700 mb-3">Add a recording</p>
+    <div className="mt-4 p-4 rounded-xl bg-dark-800 border border-dark-700">
+      <p className="text-sm font-medium text-gray-300 mb-3">Add a recording</p>
       <div className="flex flex-col gap-3">
         <input
           ref={fileInputRef}
@@ -183,7 +181,7 @@ function UploadForm({ songId, onUploaded }) {
           accept="audio/*"
           onChange={handleFileChange}
           disabled={isUploading}
-          className="text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-red-50 file:text-red-700 hover:file:bg-red-100 disabled:opacity-50"
+          className="text-sm text-gray-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-red-900 file:text-red-200 hover:file:bg-red-800 disabled:opacity-50"
         />
         {file && (
           <>
@@ -193,7 +191,7 @@ function UploadForm({ songId, onUploaded }) {
               value={label}
               onChange={e => setLabel(e.target.value)}
               disabled={isUploading}
-              className="text-sm px-3 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-red-300 disabled:opacity-50"
+              className="text-sm px-3 py-2 rounded-lg border border-dark-700 bg-dark-900 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50"
             />
             <div className="flex items-center gap-3">
               <button
@@ -242,8 +240,8 @@ export default function RecordingsPanel({ songId }) {
 
   return (
     <section className="mt-8">
-      <h2 className="text-base font-semibold text-gray-900 mb-1">Recordings</h2>
-      <p className="text-sm text-gray-500 mb-4">
+      <h2 className="text-base font-semibold text-white mb-1">Recordings</h2>
+      <p className="text-sm text-gray-400 mb-4">
         {loading ? 'Loading…' : recordings.length === 0 ? 'No recordings yet.' : `${recordings.length} take${recordings.length !== 1 ? 's' : ''}`}
       </p>
       {recordings.map(r => (
