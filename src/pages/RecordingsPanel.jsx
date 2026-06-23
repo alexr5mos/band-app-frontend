@@ -3,7 +3,7 @@
 // Handles: upload with progress bar, optional label, playback, delete.
 
 import { useState, useRef, useEffect } from 'react';
-import api from '../lib/api'; // your existing axios/fetch wrapper
+import api from '../api'; // your existing axios/fetch wrapper
 
 // ---------------------------------------------------------------------------
 // Helpers
