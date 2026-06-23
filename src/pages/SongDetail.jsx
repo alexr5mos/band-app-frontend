@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { songsAPI } from '../api';
 import { useStore } from '../store';
+import RecordingsPanel from './RecordingsPanel';
 
 export default function SongDetail() {
   const { id } = useParams();
