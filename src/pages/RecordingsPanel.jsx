@@ -47,28 +47,32 @@ function AudioPlayer({ storagePath }) {
     setLoading(false);
   }
 
-  if (error) return <span className="text-xs text-red-500">{error}</span>;
+  if (error) return <span className="text-sm text-red-500">{error}</span>;
 
   if (!url) {
     return (
       <button
         onClick={load}
         disabled={loading}
-        className="text-sm text-red-600 font-medium hover:underline disabled:opacity-50"
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-base font-semibold disabled:opacity-50 transition-colors"
       >
-        {loading ? 'Loading…' : '▶ Play'}
+        <span className="text-lg leading-none">▶</span>
+        {loading ? 'Loading…' : 'Play'}
       </button>
     );
   }
 
   return (
-    <audio controls autoPlay src={url} className="w-full h-8 mt-1" style={{ accentColor: '#dc2626' }} />
+    <audio controls autoPlay src={url} className="w-full h-10 mt-1" style={{ accentColor: '#16a34a' }} />
   );
 }
 
-function RecordingRow({ recording, onDeleted }) {
+function RecordingRow({ recording, onDeleted, onLabelChanged }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [editingLabel, setEditingLabel] = useState(false);
+  const [labelValue, setLabelValue] = useState(recording.label || '');
+  const [savingLabel, setSavingLabel] = useState(false);
 
   async function handleDelete() {
     setDeleting(true);
@@ -77,16 +81,60 @@ function RecordingRow({ recording, onDeleted }) {
     onDeleted(recording.id);
   }
 
+  async function handleSaveLabel() {
+    setSavingLabel(true);
+    const newLabel = labelValue.trim() || null;
+    const { error } = await supabase
+      .from('recordings')
+      .update({ label: newLabel })
+      .eq('id', recording.id);
+    setSavingLabel(false);
+    if (!error) {
+      onLabelChanged(recording.id, newLabel);
+      setEditingLabel(false);
+    }
+  }
+
   return (
-    <div className="py-3 border-b border-gray-700 last:border-0">
-      <div className="flex items-start justify-between gap-2 mb-1">
-        <div className="min-w-0">
-          {recording.label && (
-            <span className="font-semibold text-sm text-white block truncate">{recording.label}</span>
+    <div className="py-4 border-b border-dark-700 last:border-0">
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <div className="min-w-0 flex-1">
+          {editingLabel ? (
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={labelValue}
+                onChange={e => setLabelValue(e.target.value)}
+                placeholder="Label"
+                autoFocus
+                className="flex-1 text-base px-3 py-1.5 rounded-lg border border-dark-700 bg-dark-900 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+              <button onClick={handleSaveLabel} disabled={savingLabel} className="text-green-500 text-sm font-semibold hover:underline disabled:opacity-50">
+                {savingLabel ? 'Saving…' : 'Save'}
+              </button>
+              <button onClick={() => { setEditingLabel(false); setLabelValue(recording.label || ''); }} className="text-gray-400 text-sm hover:underline">
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <div className="min-w-0">
+                {recording.label && (
+                  <span className="font-semibold text-lg text-white block truncate">{recording.label}</span>
+                )}
+                <span className="text-sm text-gray-400 block truncate">{recording.filename}</span>
+              </div>
+              <button
+                onClick={() => setEditingLabel(true)}
+                className="text-gray-500 hover:text-red-400 transition-colors shrink-0"
+                title="Edit label"
+              >
+                ✎
+              </button>
+            </div>
           )}
-          <span className="text-xs text-gray-400 block truncate">{recording.filename}</span>
         </div>
-        <div className="flex items-center gap-3 text-xs text-gray-400 shrink-0 mt-0.5">
+        <div className="flex items-center gap-3 text-sm text-gray-400 shrink-0 mt-1">
           {recording.duration_seconds && <span>{formatDuration(recording.duration_seconds)}</span>}
           {recording.file_size_bytes && <span>{formatBytes(recording.file_size_bytes)}</span>}
           <span>{new Date(recording.created_at).toLocaleDateString()}</span>
@@ -173,7 +221,7 @@ function UploadForm({ songId, onUploaded }) {
 
   return (
     <div className="mt-4 p-4 rounded-xl bg-dark-800 border border-dark-700">
-      <p className="text-sm font-medium text-gray-300 mb-3">Add a recording</p>
+      <p className="text-base font-medium text-gray-300 mb-3">Add a recording</p>
       <div className="flex flex-col gap-3">
         <input
           ref={fileInputRef}
@@ -238,14 +286,18 @@ export default function RecordingsPanel({ songId }) {
     setRecordings(prev => prev.filter(r => r.id !== id));
   }
 
+  function handleLabelChanged(id, newLabel) {
+    setRecordings(prev => prev.map(r => r.id === id ? { ...r, label: newLabel } : r));
+  }
+
   return (
     <section className="mt-8">
-      <h2 className="text-base font-semibold text-white mb-1">Recordings</h2>
-      <p className="text-sm text-gray-400 mb-4">
+      <h2 className="text-xl font-semibold mb-2">Recordings</h2>
+      <p className="text-base text-gray-400 mb-4">
         {loading ? 'Loading…' : recordings.length === 0 ? 'No recordings yet.' : `${recordings.length} take${recordings.length !== 1 ? 's' : ''}`}
       </p>
       {recordings.map(r => (
-        <RecordingRow key={r.id} recording={r} onDeleted={handleDeleted} />
+        <RecordingRow key={r.id} recording={r} onDeleted={handleDeleted} onLabelChanged={handleLabelChanged} />
       ))}
       <UploadForm songId={songId} onUploaded={handleUploaded} />
     </section>
