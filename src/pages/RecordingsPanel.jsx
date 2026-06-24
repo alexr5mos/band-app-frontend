@@ -97,8 +97,8 @@ function RecordingRow({ recording, onDeleted, onLabelChanged }) {
 
   return (
     <div className="py-4 border-b border-dark-700 last:border-0">
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <div className="min-w-0 flex-1">
+      <div className="mb-2">
+        <div className="min-w-0 flex-1 mb-2">
           {editingLabel ? (
             <div className="flex items-center gap-2">
               <input
@@ -120,7 +120,7 @@ function RecordingRow({ recording, onDeleted, onLabelChanged }) {
             <div className="flex items-center gap-2">
               <div className="min-w-0">
                 {recording.label && (
-                  <span className="font-semibold text-lg text-white block truncate">{recording.label}</span>
+                  <span className="font-semibold text-lg text-white block break-words">{recording.label}</span>
                 )}
                 <span className="text-sm text-gray-400 block truncate">{recording.filename}</span>
               </div>
@@ -134,14 +134,14 @@ function RecordingRow({ recording, onDeleted, onLabelChanged }) {
             </div>
           )}
         </div>
-        <div className="flex items-center gap-3 text-sm text-gray-400 shrink-0 mt-1">
+        <div className="flex items-center gap-3 text-sm text-gray-400">
           {recording.duration_seconds && <span>{formatDuration(recording.duration_seconds)}</span>}
           {recording.file_size_bytes && <span>{formatBytes(recording.file_size_bytes)}</span>}
           <span>{new Date(recording.created_at).toLocaleDateString()}</span>
           {!confirmDelete ? (
-            <button onClick={() => setConfirmDelete(true)} className="text-gray-500 hover:text-red-400 transition-colors" title="Delete">✕</button>
+            <button onClick={() => setConfirmDelete(true)} className="text-gray-500 hover:text-red-400 transition-colors ml-auto" title="Delete">✕</button>
           ) : (
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1 ml-auto">
               <button onClick={handleDelete} disabled={deleting} className="text-red-500 font-medium hover:underline disabled:opacity-50">
                 {deleting ? 'Deleting…' : 'Delete?'}
               </button>
