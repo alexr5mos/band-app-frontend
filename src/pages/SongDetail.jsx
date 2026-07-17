@@ -7,28 +7,28 @@ import RecordingsPanel from './RecordingsPanel';
 export default function SongDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { currentSong, setCurrentSong } = useStore();
+  const { setCurrentSong } = useStore();
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(!id);
   const [saving, setSaving] = useState(false);
 
-  const [song, setSong] = useState(
-    currentSong || {
-      title: '',
-      capo: null,
-      bpm: '',
-      key: '',
-      details: { lyrics: '', chords: '', structure: '', notes: '' },
-    }
-  );
+  const [song, setSong] = useState({
+    title: '',
+    capo: null,
+    bpm: '',
+    key: '',
+    details: { lyrics: '', chords: '', structure: '', notes: '' },
+  });
 
   useEffect(() => {
-    if (id && !currentSong) {
+    if (id) {
+      setCurrentSong(null);
       loadSong();
     }
-  }, [id, currentSong]);
+  }, [id]);
 
   const loadSong = async () => {
+    setLoading(true);
     try {
       const data = await songsAPI.getOne(id);
       setSong(data);
