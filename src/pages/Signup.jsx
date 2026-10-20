@@ -57,14 +57,14 @@ export default function Signup() {
             placeholder="Your name"
             value={form.username}
             onChange={(e) => setForm({ ...form, username: e.target.value })}
-            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
             required
           />
 
           <select
             value={form.instrument}
             onChange={(e) => setForm({ ...form, instrument: e.target.value })}
-            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white focus:outline-none focus:border-brand-500"
           >
             <option value="">Select instrument</option>
             <option value="vocals">Vocals</option>
@@ -80,7 +80,7 @@ export default function Signup() {
             placeholder="Email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
             required
           />
 
@@ -89,14 +89,14 @@ export default function Signup() {
             placeholder="Password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
-            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
             required
           />
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded disabled:opacity-50"
+            className="w-full px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded disabled:opacity-50"
           >
             {loading ? 'Creating account...' : 'Sign up'}
           </button>
@@ -104,7 +104,7 @@ export default function Signup() {
 
         <p className="text-center text-gray-400 mt-6">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-400 hover:text-blue-300">
+          <Link to="/login" className="text-brand-400 hover:text-brand-300">
             Login
           </Link>
         </p>
