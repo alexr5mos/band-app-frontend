@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { songsAPI } from '../api';
 import { useStore } from '../store';
 import RecordingsPanel from './RecordingsPanel';
+import { SongStructureEditor, SongStructureView } from './SongStructure';
 
 export default function SongDetail() {
   const { id } = useParams();
@@ -11,6 +12,7 @@ export default function SongDetail() {
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(!id);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
 
   const [song, setSong] = useState({
     title: '',
@@ -41,7 +43,12 @@ export default function SongDetail() {
   };
 
   const handleSave = async () => {
+    if (!song.title.trim()) {
+      setError('Give the song a title before saving.');
+      return;
+    }
     setSaving(true);
+    setError('');
     try {
       if (!id) {
         const data = await songsAPI.create({
@@ -71,9 +78,21 @@ export default function SongDetail() {
       }
     } catch (err) {
       console.error('Failed to save:', err);
+      setError(`Couldn't save the song: ${err.message || 'unknown error'}`);
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleCancel = () => {
+    setError('');
+    if (!id) {
+      navigate('/songs');
+      return;
+    }
+    // Throw away unsaved edits and go back to viewing the song.
+    setEditing(false);
+    loadSong();
   };
 
   const handleDelete = async () => {
@@ -115,7 +134,7 @@ export default function SongDetail() {
               {saving ? 'Saving...' : '✓ Save'}
             </button>
             <button
-              onClick={() => navigate('/songs')}
+              onClick={handleCancel}
               className="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm font-semibold"
             >
               Cancel
@@ -140,6 +159,12 @@ export default function SongDetail() {
       </div>
 
       <div className="max-w-2xl mx-auto p-4 space-y-6">
+        {error && (
+          <div className="bg-red-900/40 border border-red-800 text-red-200 rounded p-3 text-sm">
+            {error}
+          </div>
+        )}
+
         {/* Title */}
         {editing ? (
           <input
@@ -237,19 +262,16 @@ export default function SongDetail() {
         <div>
           <h2 className="text-xl font-semibold mb-2">Structure</h2>
           {editing ? (
-            <textarea
-              value={song.details?.structure || ''}
-              onChange={(e) => setSong({
-                ...song,
-                details: { ...song.details, structure: e.target.value },
-              })}
-              placeholder="Verse • Chorus • Bridge • Chorus • Outro"
-              className="w-full h-20 bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
+            <SongStructureEditor
+              raw={song.details?.structure || ''}
+              bpm={song.bpm}
+              onChange={(structure) => setSong((prev) => ({
+                ...prev,
+                details: { ...prev.details, structure },
+              }))}
             />
           ) : (
-            <div className="bg-dark-800 border border-dark-700 rounded p-3 whitespace-pre-wrap">
-              {song.details?.structure || 'No structure yet'}
-            </div>
+            <SongStructureView raw={song.details?.structure || ''} bpm={song.bpm} />
           )}
         </div>
 
