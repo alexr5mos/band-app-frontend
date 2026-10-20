@@ -101,7 +101,7 @@ export default function SongDetail() {
       <div className="bg-dark-800 border-b border-dark-700 p-4 flex justify-between items-center sticky top-0 z-10">
         <button
           onClick={() => navigate('/songs')}
-          className="text-blue-400 hover:text-blue-300 font-semibold"
+          className="text-brand-400 hover:text-brand-300 font-semibold"
         >
           ← Songs
         </button>
@@ -110,7 +110,7 @@ export default function SongDetail() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-sm font-semibold disabled:opacity-50"
+              className="px-4 py-2 bg-brand-600 hover:bg-brand-700 rounded text-sm font-semibold disabled:opacity-50"
             >
               {saving ? 'Saving...' : '✓ Save'}
             </button>
@@ -132,7 +132,7 @@ export default function SongDetail() {
         ) : (
           <button
             onClick={() => setEditing(true)}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm font-semibold"
+            className="px-4 py-2 bg-brand-600 hover:bg-brand-700 rounded text-sm font-semibold"
           >
             Edit
           </button>
@@ -147,7 +147,7 @@ export default function SongDetail() {
             value={song.title}
             onChange={(e) => setSong({ ...song, title: e.target.value })}
             placeholder="Song title"
-            className="w-full text-3xl font-bold bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+            className="w-full text-3xl font-bold bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white focus:outline-none focus:border-brand-500"
           />
         ) : (
           <h1 className="text-3xl font-bold">{song.title}</h1>
@@ -160,7 +160,7 @@ export default function SongDetail() {
               <select
                 value={song.capo || ''}
                 onChange={(e) => setSong({ ...song, capo: e.target.value ? parseInt(e.target.value, 10) : null })}
-                className="bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                className="bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white focus:outline-none focus:border-brand-500"
               >
                 <option value="">No capo</option>
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((fret) => (
@@ -174,14 +174,14 @@ export default function SongDetail() {
                 placeholder="BPM"
                 value={song.bpm || ''}
                 onChange={(e) => setSong({ ...song, bpm: e.target.value })}
-                className="bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                className="bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
               />
               <input
                 type="text"
                 placeholder="Key"
                 value={song.key || ''}
                 onChange={(e) => setSong({ ...song, key: e.target.value })}
-                className="bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+                className="bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
               />
             </>
           ) : (
@@ -204,7 +204,7 @@ export default function SongDetail() {
                 details: { ...song.details, chords: e.target.value },
               })}
               placeholder="Verse: Am, F, C, G..."
-              className="w-full h-32 bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 font-mono text-sm"
+              className="w-full h-32 bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 font-mono text-sm"
             />
           ) : (
             <div className="bg-dark-800 border border-dark-700 rounded p-3 font-mono text-sm whitespace-pre-wrap">
@@ -224,7 +224,7 @@ export default function SongDetail() {
                 details: { ...song.details, lyrics: e.target.value },
               })}
               placeholder="Song lyrics..."
-              className="w-full h-40 bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              className="w-full h-40 bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
             />
           ) : (
             <div className="bg-dark-800 border border-dark-700 rounded p-3 whitespace-pre-wrap">
@@ -244,7 +244,7 @@ export default function SongDetail() {
                 details: { ...song.details, structure: e.target.value },
               })}
               placeholder="Verse • Chorus • Bridge • Chorus • Outro"
-              className="w-full h-20 bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              className="w-full h-20 bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
             />
           ) : (
             <div className="bg-dark-800 border border-dark-700 rounded p-3 whitespace-pre-wrap">
@@ -264,7 +264,7 @@ export default function SongDetail() {
                 details: { ...song.details, notes: e.target.value },
               })}
               placeholder="Rehearsal notes..."
-              className="w-full h-24 bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              className="w-full h-24 bg-dark-800 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
             />
           ) : (
             <div className="bg-dark-800 border border-dark-700 rounded p-3 whitespace-pre-wrap">

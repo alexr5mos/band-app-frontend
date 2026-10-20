@@ -54,7 +54,7 @@ function AudioPlayer({ storagePath }) {
       <button
         onClick={load}
         disabled={loading}
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-base font-semibold disabled:opacity-50 transition-colors"
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-base font-semibold disabled:opacity-50 transition-colors"
       >
         <span className="text-lg leading-none">▶</span>
         {loading ? 'Loading…' : 'Play'}
@@ -107,9 +107,9 @@ function RecordingRow({ recording, onDeleted, onLabelChanged }) {
                 onChange={e => setLabelValue(e.target.value)}
                 placeholder="Label"
                 autoFocus
-                className="flex-1 text-base px-3 py-1.5 rounded-lg border border-dark-700 bg-dark-900 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="flex-1 text-base px-3 py-1.5 rounded-lg border border-dark-700 bg-dark-900 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
-              <button onClick={handleSaveLabel} disabled={savingLabel} className="text-green-500 text-sm font-semibold hover:underline disabled:opacity-50">
+              <button onClick={handleSaveLabel} disabled={savingLabel} className="text-brand-400 text-sm font-semibold hover:underline disabled:opacity-50">
                 {savingLabel ? 'Saving…' : 'Save'}
               </button>
               <button onClick={() => { setEditingLabel(false); setLabelValue(recording.label || ''); }} className="text-gray-400 text-sm hover:underline">
@@ -239,7 +239,7 @@ function UploadForm({ songId, onUploaded }) {
               value={label}
               onChange={e => setLabel(e.target.value)}
               disabled={isUploading}
-              className="text-sm px-3 py-2 rounded-lg border border-dark-700 bg-dark-900 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50"
+              className="text-sm px-3 py-2 rounded-lg border border-dark-700 bg-dark-900 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
             />
             <div className="flex items-center gap-3">
               <button

@@ -50,7 +50,7 @@ export default function Login() {
             placeholder="Band email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
             required
           />
 
@@ -59,14 +59,14 @@ export default function Login() {
             placeholder="Band password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
-            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
             required
           />
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-3 bg-white hover:bg-gray-100 text-black font-semibold rounded disabled:opacity-50"
+            className="w-full px-4 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded disabled:opacity-50"
           >
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
