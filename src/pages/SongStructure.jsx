@@ -1,8 +1,10 @@
 // src/pages/SongStructure.jsx
 // Section-by-section song structure: ordered sections with bar counts and
 // chords, a proportional timeline, and song length worked out from the BPM.
-// Saved as JSON in song_details.structure; older plain-text structures
-// ("Verse • Chorus • ...") are converted to sections when opened.
+// Sections with the same name share their chords unless unlinked, and custom
+// sections can be added by name. Saved as JSON in song_details.structure;
+// older plain-text structures ("Verse • Chorus • ...") are converted to
+// sections when opened.
 
 import { useState } from 'react';
 
@@ -17,7 +19,7 @@ export const SECTION_TYPES = [
   { type: 'Outro', bars: 4, color: 'bg-slate-500' },
 ];
 
-const OTHER_COLOR = 'bg-gray-600';
+const OTHER_COLOR = 'bg-fuchsia-700';
 const BEATS_PER_BAR = 4;
 
 function typeInfo(type) {
@@ -36,19 +38,35 @@ function matchType(name) {
   return found ? found.type : null;
 }
 
+// Sections of the same kind ("Verse", or a custom name) share chords.
+function kindOf(section) {
+  return section.label || section.type;
+}
+
 // Turns whatever is stored in song_details.structure into a list of sections.
 export function parseStructure(raw) {
   if (!raw || !raw.trim()) return [];
   try {
     const parsed = JSON.parse(raw);
     if (parsed && Array.isArray(parsed.sections)) {
-      return parsed.sections.map((s) => ({
-        id: s.id || newId(),
-        type: s.type || 'Other',
-        label: s.label || '',
-        bars: Number(s.bars) > 0 ? Number(s.bars) : 4,
-        chords: s.chords || '',
-      }));
+      const firstChords = {};
+      return parsed.sections.map((s) => {
+        const section = {
+          id: s.id || newId(),
+          type: s.type || 'Other',
+          label: s.label || '',
+          bars: Number(s.bars) > 0 ? Number(s.bars) : 4,
+          chords: s.chords || '',
+        };
+        // Songs saved before linking existed: keep sections whose chords
+        // already differ from the first of their kind independent.
+        const kind = kindOf(section);
+        if (section.chords && firstChords[kind] === undefined) firstChords[kind] = section.chords;
+        section.linked = s.linked !== undefined
+          ? s.linked !== false
+          : !section.chords || firstChords[kind] === section.chords;
+        return section;
+      });
     }
   } catch {
     // Not JSON: an older plain-text structure, handled below.
@@ -65,6 +83,7 @@ export function parseStructure(raw) {
         label: type ? '' : name,
         bars: type ? typeInfo(type).bars : 8,
         chords: '',
+        linked: true,
       };
     });
 }
@@ -73,7 +92,7 @@ export function serializeStructure(sections) {
   if (!sections.length) return '';
   return JSON.stringify({
     version: 1,
-    sections: sections.map(({ id, type, label, bars, chords }) => ({ id, type, label, bars, chords })),
+    sections: sections.map(({ id, type, label, bars, chords, linked }) => ({ id, type, label, bars, chords, linked })),
   });
 }
 
@@ -81,12 +100,12 @@ export function serializeStructure(sections) {
 function sectionNames(sections) {
   const totals = {};
   sections.forEach((s) => {
-    const name = s.label || s.type;
+    const name = kindOf(s);
     totals[name] = (totals[name] || 0) + 1;
   });
   const seen = {};
   return sections.map((s) => {
-    const name = s.label || s.type;
+    const name = kindOf(s);
     seen[name] = (seen[name] || 0) + 1;
     return totals[name] > 1 ? `${name} ${seen[name]}` : name;
   });
@@ -202,24 +221,68 @@ export function SongStructureView({ raw, bpm }) {
 // `onChange` receives the new string to store.
 export function SongStructureEditor({ raw, bpm, onChange }) {
   const [sections, setSections] = useState(() => parseStructure(raw));
+  const [customName, setCustomName] = useState(null);
   const names = sectionNames(sections);
+  const kindCounts = {};
+  sections.forEach((s) => { kindCounts[kindOf(s)] = (kindCounts[kindOf(s)] || 0) + 1; });
+  const customKinds = [...new Set(sections.filter((s) => s.type === 'Other').map(kindOf))];
 
   const update = (next) => {
     setSections(next);
     onChange(serializeStructure(next));
   };
 
-  const addSection = (type) => {
-    // A repeated section usually has the same chords, so reuse the last ones.
-    const previous = [...sections].reverse().find((s) => s.type === type);
+  // type is one of SECTION_TYPES, or 'Other' with a custom label.
+  const addSection = (type, label = '') => {
+    const kind = label || type;
+    // A repeated section usually has the same chords, so reuse the linked ones.
+    const same = [...sections].reverse().filter((s) => kindOf(s) === kind);
+    const source = same.find((s) => s.linked) || same[0];
     update([
       ...sections,
-      { id: newId(), type, label: '', bars: previous?.bars || typeInfo(type).bars, chords: previous?.chords || '' },
+      {
+        id: newId(),
+        type,
+        label,
+        bars: source?.bars || typeInfo(type)?.bars || 8,
+        chords: source?.linked ? source.chords : '',
+        linked: true,
+      },
     ]);
+  };
+
+  const addCustom = () => {
+    const name = (customName || '').trim();
+    if (!name) return;
+    const type = matchType(name);
+    if (type) addSection(type);
+    else addSection('Other', name);
+    setCustomName(null);
   };
 
   const patch = (index, changes) => {
     update(sections.map((s, i) => (i === index ? { ...s, ...changes } : s)));
+  };
+
+  // Typing chords in a linked section updates every linked section of its kind.
+  const setChords = (index, chords) => {
+    const edited = sections[index];
+    update(sections.map((s, i) => {
+      if (i === index) return { ...s, chords };
+      if (edited.linked && s.linked && kindOf(s) === kindOf(edited)) return { ...s, chords };
+      return s;
+    }));
+  };
+
+  const toggleLinked = (index) => {
+    const edited = sections[index];
+    if (edited.linked) {
+      patch(index, { linked: false });
+      return;
+    }
+    // Re-linking picks up the chords the other linked sections already share.
+    const other = sections.find((s, i) => i !== index && s.linked && kindOf(s) === kindOf(edited));
+    patch(index, { linked: true, chords: other ? other.chords : edited.chords });
   };
 
   const move = (index, delta) => {
@@ -261,10 +324,21 @@ export function SongStructureEditor({ raw, bpm, onChange }) {
             <input
               type="text"
               value={s.chords}
-              onChange={(e) => patch(i, { chords: e.target.value })}
+              onChange={(e) => setChords(i, e.target.value)}
               placeholder="Chords, e.g. Am F C G"
               className="w-full bg-dark-900 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 font-mono text-sm"
             />
+            {kindCounts[kindOf(s)] > 1 && (
+              <label className="flex items-center gap-2 text-xs text-gray-400">
+                <input
+                  type="checkbox"
+                  checked={s.linked}
+                  onChange={() => toggleLinked(i)}
+                  className="accent-brand-600"
+                />
+                Same chords as every {kindOf(s)}
+              </label>
+            )}
           </div>
         ))}
       </div>
@@ -282,7 +356,57 @@ export function SongStructureEditor({ raw, bpm, onChange }) {
               <span className={`${t.color} w-2.5 h-2.5 rounded-full`} />+ {t.type}
             </button>
           ))}
+          {customKinds.map((name) => (
+            <button
+              key={name}
+              type="button"
+              onClick={() => addSection('Other', name)}
+              className="px-3 py-2 rounded bg-dark-700 hover:bg-dark-600 text-sm font-semibold flex items-center gap-2"
+            >
+              <span className={`${OTHER_COLOR} w-2.5 h-2.5 rounded-full`} />+ {name}
+            </button>
+          ))}
+          {customName === null && (
+            <button
+              type="button"
+              onClick={() => setCustomName('')}
+              className="px-3 py-2 rounded border border-dashed border-dark-600 hover:bg-dark-700 text-sm font-semibold text-gray-300"
+            >
+              + Custom…
+            </button>
+          )}
         </div>
+        {customName !== null && (
+          <div className="flex gap-2 mt-2">
+            <input
+              type="text"
+              value={customName}
+              onChange={(e) => setCustomName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') { e.preventDefault(); addCustom(); }
+                if (e.key === 'Escape') setCustomName(null);
+              }}
+              placeholder="Section name, e.g. Interlude"
+              autoFocus
+              className="flex-1 min-w-0 bg-dark-900 border border-dark-700 rounded px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 text-sm"
+            />
+            <button
+              type="button"
+              onClick={addCustom}
+              disabled={!customName.trim()}
+              className="px-3 py-2 bg-brand-600 hover:bg-brand-700 rounded text-sm font-semibold disabled:opacity-50"
+            >
+              Add
+            </button>
+            <button
+              type="button"
+              onClick={() => setCustomName(null)}
+              className="px-3 py-2 bg-dark-700 hover:bg-dark-600 rounded text-sm font-semibold"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
