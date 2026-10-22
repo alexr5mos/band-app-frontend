@@ -96,22 +96,33 @@ export default function SongsList() {
                 to={`/songs/${song.id}`}
                 className="block p-4 bg-dark-800 border border-dark-700 rounded hover:bg-dark-700 transition"
               >
-                <h3 className="font-semibold text-lg mb-1">{song.title}</h3>
-                <div className="flex gap-3 text-sm text-gray-400">
-                  {song.capo !== null && song.capo !== undefined && <span>🪜 Capo {song.capo}</span>}
-                  {song.bpm && <span>🎵 {song.bpm} BPM</span>}
-                  {song.key && <span>🎼 {song.key}</span>}
+                <div className="flex items-baseline justify-between gap-3 mb-2">
+                  <h3 className="font-semibold text-lg truncate">{song.title}</h3>
+                  {song.updated_at && (
+                    <span className="text-xs text-gray-500 shrink-0">
+                      {new Date(song.updated_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
+                    </span>
+                  )}
                 </div>
-                {song.updated_at && (
-                  <div className="text-xs text-gray-500 mt-2">
-                    {new Date(song.updated_at).toLocaleDateString()}
-                  </div>
-                )}
+                <div className="flex flex-wrap gap-1.5">
+                  {song.key && <Tag label="Key" value={song.key} />}
+                  {song.bpm && <Tag label="BPM" value={song.bpm} />}
+                  {song.capo !== null && song.capo !== undefined && <Tag label="Capo" value={song.capo} />}
+                </div>
               </Link>
             ))}
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+function Tag({ label, value }) {
+  return (
+    <span className="inline-flex items-baseline gap-1 px-2 py-0.5 rounded-full bg-dark-700 text-xs">
+      <span className="text-gray-400">{label}</span>
+      <span className="font-semibold text-gray-100">{value}</span>
+    </span>
   );
 }
