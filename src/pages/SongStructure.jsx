@@ -118,6 +118,12 @@ function formatLength(totalBars, bpm) {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
+// Song length ("3:24") from a stored structure, or null without a BPM.
+export function songLength(raw, bpm) {
+  const totalBars = parseStructure(raw).reduce((sum, s) => sum + s.bars, 0);
+  return totalBars ? formatLength(totalBars, bpm) : null;
+}
+
 function colorFor(section) {
   return typeInfo(section.type)?.color || OTHER_COLOR;
 }
@@ -169,7 +175,7 @@ export function structureAsText(sections, bpm) {
 }
 
 // Read-only view shown on the song page.
-export function SongStructureView({ raw, bpm }) {
+export function SongStructureView({ raw, bpm, chordSize = 'text-sm' }) {
   const [copied, setCopied] = useState(false);
   const sections = parseStructure(raw);
 
@@ -212,7 +218,7 @@ export function SongStructureView({ raw, bpm }) {
                 <span className="text-sm text-gray-400">{s.bars} bars</span>
               </div>
               {s.chords.trim() && (
-                <div className="font-mono text-sm text-gray-200 mt-1 whitespace-pre-wrap break-words">{s.chords}</div>
+                <div className={`font-mono ${chordSize} text-gray-200 mt-1 whitespace-pre-wrap break-words`}>{s.chords}</div>
               )}
             </div>
           </div>
