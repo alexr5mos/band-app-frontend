@@ -292,7 +292,7 @@ export default function RecordingsPanel({ songId }) {
 
   return (
     <section className="mt-8">
-      <h2 className="text-xl font-semibold mb-2">Recordings</h2>
+      <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Recordings</h2>
       <p className="text-base text-gray-400 mb-4">
         {loading ? 'Loading…' : recordings.length === 0 ? 'No recordings yet.' : `${recordings.length} take${recordings.length !== 1 ? 's' : ''}`}
       </p>
