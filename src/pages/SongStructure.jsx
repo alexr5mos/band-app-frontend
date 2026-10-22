@@ -122,19 +122,24 @@ function colorFor(section) {
   return typeInfo(section.type)?.color || OTHER_COLOR;
 }
 
+// Wraps onto several lines at a fixed scale (16 bars per line on phones,
+// 32 on wider screens) so section names stay readable.
 function Timeline({ sections, names }) {
   const total = sections.reduce((sum, s) => sum + s.bars, 0);
   if (!total) return null;
   return (
-    <div className="flex w-full h-10 rounded overflow-hidden border border-dark-700">
+    <div className="flex flex-wrap gap-y-1 w-full [--bars-per-line:16] sm:[--bars-per-line:32]">
       {sections.map((s, i) => (
         <div
           key={s.id}
-          className={`${colorFor(s)} flex items-center justify-center text-[11px] font-semibold text-white overflow-hidden whitespace-nowrap border-r border-dark-900 last:border-r-0`}
-          style={{ width: `${(s.bars / total) * 100}%` }}
+          className="h-11 p-px"
+          style={{ width: `min(100%, calc(${s.bars} * 100% / var(--bars-per-line)))` }}
           title={`${names[i]} · ${s.bars} bars`}
         >
-          <span className="truncate px-1">{names[i]}</span>
+          <div className={`${colorFor(s)} h-full rounded flex flex-col items-center justify-center text-white overflow-hidden px-1 leading-tight`}>
+            <span className="text-xs font-semibold truncate max-w-full">{names[i]}</span>
+            <span className="text-[10px] opacity-80">{s.bars}</span>
+          </div>
         </div>
       ))}
     </div>
