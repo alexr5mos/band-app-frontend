@@ -158,7 +158,7 @@ function Summary({ sections, bpm }) {
   return (
     <div className="flex gap-4 text-sm text-gray-400">
       <span>{totalBars} bars total</span>
-      {length ? <span>⏱ {length} at {bpm} BPM</span> : <span>Add a BPM to see the song length</span>}
+      {length ? <span>{length} at {bpm} BPM</span> : <span>Add a BPM to see the song length</span>}
     </div>
   );
 }
